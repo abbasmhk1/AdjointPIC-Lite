@@ -1,129 +1,377 @@
 # AdjointPIC-Lite
+### A From-Scratch Computational Photonics and Inverse-Design Framework
 
-### From-scratch scalar FDFD simulation, discrete adjoints, and photonic inverse design.
+**AdjointPIC-Lite** is an ongoing computational photonics project focused on developing a lightweight, from-scratch framework for electromagnetic simulation, guided-mode analysis, and gradient-based photonic inverse design.
 
-> **Status: Work in progress — early numerical foundations.** This repository currently contains **three connected Jupyter notebooks**, not three separate projects. They form a progressive development sequence: **waveguide eigenmodes → absorbing boundaries → guided-mode excitation and transmission**. Discrete adjoints and inverse design are the **long-term goals** of AdjointPIC-Lite and are **not yet included in this repository snapshot**. The code is exploratory and will be cleaned, tested, and expanded gradually.
+The project aims to build the numerical foundations required for designing and optimizing photonic integrated circuit (PIC) components without relying entirely on existing commercial simulation and inverse-design packages.
 
-## Overview
+The framework is being developed incrementally, beginning with numerical eigenmode analysis and finite-difference frequency-domain (FDFD) modeling, followed by guided-mode excitation, adjoint sensitivity analysis, and photonic device optimization.
 
-**AdjointPIC-Lite** is an independent computational-photonics project to build a two-dimensional **scalar finite-difference frequency-domain (FDFD)** simulation and optimization workflow using Python and free scientific libraries. The project emphasizes understanding the numerical methods, checking them against reference solutions, and documenting limitations rather than relying on commercial simulation tools.
+**Project status: Work in Progress**
 
-The three notebooks are **stages of the same solver**:
+---
 
-```text
-Slab-waveguide eigenmode + effective index
-                  ↓
-       2D FDFD with PML
-                  ↓
- Guided-mode source + modal transmission
-                  ↓
-    Planned: discrete adjoint gradients
-                  ↓
-    Planned: photonic inverse design
+## 1. Project Objectives
+
+The primary objective of AdjointPIC-Lite is to develop and integrate the essential numerical methods used in computational photonics and inverse design.
+
+The main research and development objectives are:
+
+- Develop electromagnetic simulation tools using the finite-difference frequency-domain (FDFD) method.
+- Implement numerical eigenmode analysis for dielectric waveguides.
+- Investigate mesh convergence and numerical accuracy.
+- Implement perfectly matched layer (PML) absorbing boundary conditions.
+- Develop guided-mode excitation and modal transmission analysis.
+- Implement adjoint-based sensitivity analysis for efficient gradient computation.
+- Explore gradient-based optimization of photonic device geometries.
+- Investigate density filtering and material binarization for practical device design.
+- Establish a foundation for future fabrication-aware photonic inverse design.
+
+---
+
+## 2. Development Roadmap
+
+The framework is being developed through a sequence of interconnected computational modules.
+
+| Module | Development Stage | Description |
+|---|---|---|
+| 01 | Numerical foundations | Effective-index calculation and mesh convergence |
+| 02 | Electromagnetic modeling | 2D FDFD solver and PML boundary conditions |
+| 03 | Mode analysis | Guided-mode excitation and transmission |
+| 04 | Inverse design | Adjoint-based optimization of a 90° waveguide bend |
+| 05 | Future development | Advanced adjoint optimization and fabrication-aware design |
+
+Each module builds on the numerical methods and computational infrastructure established in the previous stages.
+
+---
+
+## 3. Implemented Modules
+
+### Module 01 — Effective-Index Calculation and Mesh Convergence
+
+**Objective:** Establish the numerical foundation for waveguide eigenmode analysis and investigate the accuracy of finite-difference discretization.
+
+This module investigates the effective refractive index of a dielectric slab waveguide using a finite-difference eigenvalue formulation.
+
+The numerical results are compared against an analytical solution to evaluate accuracy and convergence with respect to spatial mesh resolution.
+
+**Implementation:**
+
+- Define the refractive-index profile of a dielectric slab waveguide.
+- Construct the finite-difference second-derivative operator.
+- Solve the numerical eigenvalue problem to extract propagation constants and effective refractive indices.
+- Calculate the analytical effective index of the fundamental guided mode.
+- Compare numerical and analytical results across different mesh resolutions.
+- Investigate the effect of subpixel permittivity averaging on material-interface representation.
+- Evaluate numerical convergence behavior.
+
+**Numerical parameters:**
+
+| Parameter | Value |
+|---|---:|
+| Operating wavelength | 1.55 µm |
+| Core refractive index | 3.48 |
+| Cladding refractive index | 1.44 |
+| Waveguide width | 0.5 µm |
+| Computational domain | 4.0 µm |
+| Grid resolutions | 100, 200, 400, 800, 1200 |
+
+**Generated outputs:**
+
+- Waveguide refractive-index profile.
+- Fundamental guided-mode intensity distribution.
+- Numerical versus analytical effective-index comparison.
+- Relative effective-index error versus grid spacing.
+- Standard versus subpixel permittivity averaging comparison.
+- Numerical convergence analysis.
+
+### Module 02 — 2D FDFD Solver and Perfectly Matched Layer (PML)
+
+**Objective:** Develop the electromagnetic simulation infrastructure required for modeling optical field propagation in an open computational domain.
+
+This module introduces a two-dimensional scalar finite-difference frequency-domain (FDFD) formulation and implements absorbing boundary conditions using perfectly matched layers.
+
+**Implementation:**
+
+- Construct the two-dimensional discrete Laplacian operator.
+- Formulate the frequency-domain electromagnetic problem.
+- Implement PML boundary treatment using complex coordinate stretching.
+- Investigate the influence of PML parameters on numerical absorption.
+- Compare field behavior with and without absorbing boundary treatment.
+- Examine numerical convergence with respect to PML configuration.
+
+**Main outputs:**
+
+- Two-dimensional electromagnetic field distributions.
+- Comparison of absorbing and non-absorbing boundary configurations.
+- PML thickness convergence analysis.
+- Numerical validation of the electromagnetic solver.
+
+### Module 03 — Guided-Mode Excitation and Transmission Analysis
+
+**Objective:** Integrate waveguide eigenmode analysis with the two-dimensional FDFD solver to investigate guided-mode excitation and optical transmission.
+
+This module connects the previously developed waveguide eigenmode calculations and electromagnetic simulation infrastructure.
+
+**Implementation:**
+
+- Calculate guided modes using a one-dimensional eigenmode solver.
+- Introduce guided-mode excitation into the two-dimensional FDFD simulation.
+- Investigate electromagnetic field propagation through the computational domain.
+- Analyze modal transmission at the output waveguide.
+- Verify the numerical simulation workflow.
+
+This module establishes the connection between eigenmode calculations, electromagnetic field propagation, and modal transmission analysis.
+
+### Module 04 — Adjoint-Based Inverse Design of a 90° Waveguide Bend
+
+**Objective:** Extend the electromagnetic simulation framework toward gradient-based photonic inverse design.
+
+This module implements a numerical inverse-design workflow for a 90° silicon photonic waveguide bend.
+
+The objective is to optimize the refractive-index distribution within a predefined design region to maximize optical power transfer between two orthogonal waveguide ports.
+
+The implementation combines the FDFD electromagnetic solver, adjoint-based gradient computation, density filtering, and gradient-based optimization.
+
+#### 4.1 Computational Domain and Geometry
+
+- Define a two-dimensional computational domain.
+- Establish fixed horizontal and vertical waveguide sections.
+- Introduce a variable 20 × 20 design region at the waveguide corner.
+- Define silicon and cladding material properties.
+
+#### 4.2 Electromagnetic Simulation
+
+- Implement the two-dimensional scalar FDFD solver.
+- Construct the discrete Laplacian operator.
+- Apply PML boundary treatment using complex coordinate stretching.
+- Calculate input and output waveguide modes using a one-dimensional eigenmode solver.
+
+#### 4.3 Inverse-Design Formulation
+
+- Represent the design region using continuous density variables.
+- Apply spatial density filtering to control the minimum feature scale.
+- Use a hyperbolic tangent projection to gradually transform the continuous density distribution toward a binary material configuration.
+- Formulate the optical transmission objective.
+
+#### 4.4 Adjoint-Based Optimization
+
+- Calculate normalized upward output modal power.
+- Implement the adjoint method for efficient design-gradient computation.
+- Verify the adjoint gradient implementation against finite-difference estimates.
+- Optimize the design using the L-BFGS-B algorithm with bounded design variables.
+- Apply projection continuation with increasing beta values.
+
+#### 4.5 Design Evaluation and Validation
+
+- Compare initial, optimized continuous, and binarized designs.
+- Evaluate transmission and estimated reflection.
+- Visualize electromagnetic field magnitude distributions.
+- Examine optimization convergence history.
+- Perform wavelength-dependent analysis at 1.50, 1.55, and 1.60 µm.
+
+**Numerical parameters:**
+
+| Parameter | Value |
+|---|---:|
+| Computational grid | 100 × 100 |
+| Grid resolution | 0.04 µm |
+| Design region | 20 × 20 |
+| Silicon refractive index | 3.48 |
+| Cladding refractive index | 1.44 |
+| Central wavelength | 1.55 µm |
+| PML thickness | 10 grid cells |
+| Density filter radius | 0.12 µm |
+| Projection continuation | β = 2, 5 |
+| Optimization algorithm | L-BFGS-B |
+| Maximum iterations per stage | 8 |
+
+**Generated outputs:**
+
+- Initial and optimized material-density distributions.
+- Continuous and binarized design configurations.
+- Electromagnetic field magnitude (|Ez|) distributions.
+- Optimization convergence history.
+- Wavelength-dependent transmission comparison.
+- Numerical optimization results.
+
+The notebook saves the numerical optimization results in:
+
+`notebook08_bend_results.npz`
+
+The saved data includes:
+
+- Initial design variables and density distribution.
+- Optimized continuous density distribution.
+- Binarized density distribution.
+- Optimization history.
+- Wavelength sweep data.
+- Initial, continuous, and binary transmission and reflection estimates.
+
+Example for loading the saved results:
+
+```python
+import numpy as np
+
+data = np.load("notebook08_bend_results.npz")
+
+rho_optimized = data["rho_continuous"]
+rho_binary = data["rho_binary"]
+history = data["history"]
+sweep = data["sweep"]
 ```
 
-## Repository structure
+---
 
-```text
-AdjointPIC-Lite/
-├── README.md
-├── requirements.txt
-├── .gitignore
-└── notebooks/
-    ├── 01_effective_index_mesh_convergence.ipynb
-    ├── 02_pml_validation.ipynb
-    └── 03_guided_mode_excitation_transmission.ipynb
-```
+## 4. Technologies and Numerical Methods
 
-## Current notebooks — one connected workflow
+The project uses Python and scientific computing libraries to implement the numerical simulation and optimization workflows.
 
-### 01 · Effective-index mesh convergence
+**Programming and scientific computing:**
 
-[`notebooks/01_effective_index_mesh_convergence.ipynb`](notebooks/01_effective_index_mesh_convergence.ipynb)
+- Python
+- NumPy
+- SciPy
+- Matplotlib
 
-**Purpose:** Establish a numerical guided mode before attempting a 2D propagation simulation. The notebook constructs a transverse finite-difference eigenvalue problem for a dielectric slab, computes effective indices and eigenvectors, compares the fundamental mode against a slab dispersion relation, studies mesh refinement, and examines **subpixel permittivity averaging** at material interfaces.
+**Electromagnetic modeling:**
 
-**Role in the overall project:** The calculated transverse mode profile and propagation constant provide the basis for exciting and measuring guided waves in Notebook 03.
+- Finite-Difference Frequency-Domain (FDFD)
+- Finite-Difference Eigenvalue Methods
+- Waveguide Eigenmode Analysis
+- Perfectly Matched Layer (PML)
+- Complex Coordinate Stretching
 
-**Representative development results** (from the notebook experiments, not a comprehensive validation suite):
+**Optimization and numerical analysis:**
 
-- Fundamental mode: numerical \(n_{\mathrm{eff}} \approx 3.275044\), analytical \(n_{\mathrm{eff}} \approx 3.275615\), relative error \(\approx 1.74\times10^{-4}\) for a 400-point example.
-- In the 400-point interface study, subpixel averaging reduced the reported relative effective-index error from \(1.74\times10^{-4}\) to \(4.07\times10^{-5}\).
+- Adjoint Sensitivity Analysis
+- Gradient-Based Optimization
+- L-BFGS-B
+- Finite-Difference Gradient Verification
+- Density Filtering
+- Hyperbolic Tangent Projection
+- Mesh and Numerical Convergence Analysis
 
-### 02 · Perfectly matched layers (PML)
+---
 
-[`notebooks/02_pml_validation.ipynb`](notebooks/02_pml_validation.ipynb)
+## 5. Installation and Requirements
 
-**Purpose:** Introduce absorbing boundaries for finite computational domains. The notebook implements complex coordinate-stretching profiles, assembles a sparse 2D FDFD operator, solves a point-source problem, compares fields with and without PML against a larger-domain numerical reference, and tests PML thickness and reference-domain sensitivity.
+The framework uses standard Python scientific computing libraries.
 
-**Role in the overall project:** The PML operator provides an approximate open-domain boundary treatment for the guided-wave simulations in Notebook 03.
+**Requirements:**
 
-**Representative development result:** In one point-source comparison, the reported relative field difference against a larger-domain reference was approximately \(7.07\times10^{-3}\) with PML versus \(1.47\) without PML. This is a **specific reference-dependent field error**, not a universal PML reflection coefficient.
+- Python 3.x
+- NumPy
+- SciPy
+- Matplotlib
+- Jupyter Notebook or JupyterLab
 
-### 03 · Guided-mode excitation and transmission
-
-[`notebooks/03_guided_mode_excitation_transmission.ipynb`](notebooks/03_guided_mode_excitation_transmission.ipynb)
-
-**Purpose:** Combine the eigenmode and PML foundations to launch a guided mode into a 2D dielectric waveguide. The notebook investigates the discrete longitudinal propagation constant, localized/equivalent modal sources, forward/backward modal decomposition, power ratios, and source-consistency diagnostics.
-
-**Role in the overall project:** This is the bridge from a passive field solver to a simulator with a controllable input mode and a measurable output objective—prerequisites for later adjoint optimization.
-
-**Representative development results:** A corrected straight-waveguide test reported a forward modal-power ratio close to 1 between interior monitoring planes, a local backward/forward modal-power ratio of approximately \(9.54\times10^{-6}\), and a source-equivalence discrepancy of approximately \(4.94\times10^{-9}\). These checks do **not** constitute a complete energy-conservation or device-accuracy proof.
-
-**Important reproducibility note:** Notebook 03 is currently a **development log**. It contains earlier point-source/PML experiments and debugging cells that redefine grid dimensions (`nx`, `ny`) and related state. It should **not** be treated as a clean, run-all production notebook. The next maintenance priority is to split reusable functions from diagnostics and make execution order deterministic.
-
-## How to run
-
-### Google Colab (recommended)
-
-1. Open [Google Colab](https://colab.research.google.com/).
-2. Upload a notebook from the `notebooks/` folder, or open it from your GitHub repository.
-3. Use a standard Python CPU runtime; no GPU, lab equipment, or commercial solver is required.
-4. Start with **01**, then **02**. Read the reproducibility warning above before running **03**.
-
-The notebooks are intended as sequential **conceptual stages**, but each contains its own exploratory code; they do not yet form an importable Python package or an automated end-to-end pipeline.
-
-### Local environment
+Install the required dependencies:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows PowerShell: .venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-jupyter lab
+pip install numpy scipy matplotlib jupyter
 ```
 
-## Numerical methods and scientific scope
+---
 
-- Sparse finite-difference operators and sparse linear algebra using **NumPy** and **SciPy**.
-- Dielectric slab eigenmodes and effective-index validation.
-- Two-dimensional **scalar** Helmholtz/FDFD simulations with complex-stretched PML.
-- Guided-mode excitation, discrete phase propagation, and modal overlap measurements.
-- Visualization and convergence diagnostics using **Matplotlib**.
+## 6. How to Run
 
-**Limitations:** This is a scalar 2D model, **not** a full-vector 3D Maxwell simulation or a fabrication-validated silicon photonic device. A small linear-system residual does not guarantee physical accuracy. Reported transmission quantities depend on mode normalization, monitor placement, mesh resolution, and boundary treatment. No fabricated or experimentally measured performance is claimed.
+1. Clone the repository:
 
-## Development roadmap
+```bash
+git clone https://github.com/YOUR_USERNAME/AdjointPIC-Lite.git
+```
 
-The repository will be extended **incrementally**, with each addition documented and checked before being presented as a validated result.
+2. Navigate to the project directory:
 
-- [x] Slab-waveguide eigenmode calculation and effective-index comparison
-- [x] Mesh-refinement and subpixel-interface experiments
-- [x] PML implementation and reference-domain experiments
-- [x] Exploratory guided-mode excitation and modal decomposition
-- [ ] Refactor Notebook 03 into a reproducible, clean-run notebook
-- [ ] Add automated eigenmode, PML, and source validation tests
-- [ ] Consolidate reusable FDFD code into a small Python module
-- [ ] Publish discrete-adjoint gradients with finite-difference checks
-- [ ] Add gradient-based dielectric topology optimization
-- [ ] Add fabrication-aware filtering, projection, and binary evaluation
-- [ ] Benchmark nontrivial photonic devices and numerical robustness
+```bash
+cd AdjointPIC-Lite
+```
 
-The title **AdjointPIC-Lite** describes the **intended complete framework**; the current release documents its numerical foundations.
+3. Install the dependencies:
 
-## Project status and citation
+```bash
+pip install numpy scipy matplotlib jupyter
+```
 
-**Early development / work in progress.** Notebook outputs and interfaces may change. Please refer to the specific notebook and commit when discussing a result. This repository is an independent computational learning and research effort, not a peer-reviewed or experimentally validated software release.
+4. Launch Jupyter Notebook:
 
-## License
+```bash
+jupyter notebook
+```
 
-No license has been selected yet. Public availability does not by itself grant permission to reuse or redistribute the code; a license may be added in a future release.
+5. Open the desired notebook and execute its cells sequentially.
+
+The notebooks can also be executed using JupyterLab or Google Colab.
+
+**Note:** Some modules generate numerical data and visualization outputs during execution. The inverse-design notebook currently uses a CPU-friendly optimization configuration with a maximum of eight iterations per projection stage. Increasing the iteration count allows more extensive optimization runs.
+
+---
+
+## 7. Future Development
+
+AdjointPIC-Lite is an ongoing project. The current implementation establishes the numerical foundations for further development toward a more comprehensive photonic inverse-design framework.
+
+Planned development directions include:
+
+**Advanced Adjoint Optimization**
+
+- Extend and improve adjoint sensitivity analysis.
+- Investigate gradient accuracy and numerical stability.
+- Explore optimization of additional photonic components.
+
+**Fabrication-Aware Inverse Design**
+
+- Investigate minimum-feature-size constraints.
+- Improve material binarization.
+- Introduce fabrication-related constraints into the optimization process.
+- Evaluate robustness against geometric variations.
+
+**Electromagnetic Validation**
+
+- Improve numerical convergence and simulation accuracy.
+- Investigate more comprehensive electromagnetic formulations.
+- Validate optimized structures using full-vector electromagnetic simulations.
+
+**Framework Development**
+
+- Improve code organization and modularity.
+- Integrate simulation, sensitivity analysis, and optimization workflows.
+- Develop reusable numerical components for different photonic devices.
+
+---
+
+## 8. Scope and Limitations
+
+The current framework focuses on developing and validating two-dimensional scalar electromagnetic simulation and inverse-design methods.
+
+The implemented waveguide bend optimization demonstrates an adjoint-based numerical workflow, but it should not be interpreted as a complete fabrication-ready photonic device.
+
+Current limitations include:
+
+- Two-dimensional scalar electromagnetic modeling rather than full-vector three-dimensional Maxwell simulation.
+- Limited optimization iterations in the current CPU-friendly configuration.
+- Further investigation required for fabrication-aware constraints and robust binarization.
+- Additional full-wave validation required before considering optimized structures for practical fabrication.
+
+These limitations define the scope of ongoing development rather than the final capabilities of the project.
+
+---
+
+## 9. Project Status
+
+**AdjointPIC-Lite is actively under development.**
+
+The project is being built incrementally, with each module extending the existing numerical infrastructure toward more advanced computational photonics applications.
+
+The current development progression is:
+
+**Waveguide Eigenmode Analysis → FDFD Electromagnetic Modeling → PML Boundary Conditions → Guided-Mode Excitation → Adjoint Sensitivity Analysis → Photonic Inverse Design**
+
+The long-term goal is to establish a lightweight, modular, and extensible computational framework for the numerical design and optimization of photonic integrated circuit components.
+
+---
+
+## 10. License
+
+A license has not yet been specified. Licensing information will be added when the project distribution terms are established.
